@@ -67,8 +67,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_ID,
     clientSecret: process.env.FACEBOOK_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/secrets",
-    profileFields: ['id', 'displayName', 'photos', 'email']
+    callbackURL: "http://localhost:3000/auth/facebook/secrets"
 },
     function (accessToken, refreshToken, profile, cb) {
         // console.log(profile);
