@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     googleId: String,
-    facebookId: String
+    facebookId: String,
+    secret: String
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -88,7 +89,7 @@ app.get('/auth/google',
     }));
 
 app.get('/auth/facebook',
-  passport.authenticate('facebook'));
+    passport.authenticate('facebook'));
 
 app.get('/auth/google/secrets',
     passport.authenticate('google', { failureRedirect: '/login' }),
@@ -106,7 +107,11 @@ app.get('/auth/facebook/secrets',
 
 
 app.get('/login', function (req, res) {
-    res.render('login');
+    if (req.isAuthenticated()) {
+        res.redirect('/secrets');
+    } else {
+        res.render('login');
+    }
 });
 
 app.get('/register', function (req, res) {
@@ -114,17 +119,46 @@ app.get('/register', function (req, res) {
 });
 
 app.get('/secrets', function (req, res) {
-    if (req.isAuthenticated()) {
-        res.render('secrets');
-    } else {
-        res.redirect('/login');
-    }
+    User.find({'secret': {$ne: null}}, function (err, users) {
+        if (!err){
+            if (users) {
+                res.render('secrets', {usersWithSecrets: users});
+            }
+        } else {
+            console.log(err);
+        }
+    });
 });
 
 app.get('/logout', function (req, res) {
     req.logout(function (err) {
         if (err) { return next(err); }
         res.redirect('/');
+    });
+});
+
+app.get('/submit', function (req, res) {
+    if (req.isAuthenticated()) {
+        res.render('submit');
+    } else {
+        res.redirect('/login');
+    }
+});
+
+app.post('/submit', function (req, res) {
+    const submittedSecret = req.body.secret;
+
+    User.findById(req.user.id, function (err, user) {
+        if (!err){
+            if (user){
+                user.secret = submittedSecret;
+                user.save(function() {
+                    res.redirect('/secrets');
+                })
+            }
+        } else {
+            console.log(err);
+        }
     });
 });
 
