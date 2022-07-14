@@ -1,4 +1,4 @@
-# <div align="center">Login/Sign up Authentication and Security App</div>
+# <div align="center">Login/Sign up Authentication and Security App with Node JS</div>
 <p align="center">A Responsive Registration app made with Node JS, consuming its own api and storing data in MongoDB data-bases.</p>
 
 ## 🛠️ Technologies
